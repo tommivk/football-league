@@ -25,4 +25,23 @@ fixturesRouter.get('/', async (_req: Request, res: Response) => {
     }
 })
 
+fixturesRouter.get('/:id', async (req: Request, res: Response) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM fixtures WHERE id = $1', [req.params.id])
+        res.status(200).send(rows[0]);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+fixturesRouter.get('/:id/goals', async (req: Request, res: Response) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM goals WHERE fixture_id = $1', [req.params.id])
+        res.status(200).send(rows);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+
 module.exports = fixturesRouter;

@@ -14,11 +14,11 @@ playersRouter.get('/', async (_req: Request, res: Response) => {
 
 playersRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, teamId, position, kit_number } = req.body;
+    const { name, teamId, position, kitNumber } = req.body;
 
     await pool.query(
       'INSERT INTO players (team_id, name, position, kit_number) VALUES ($1, $2, $3, $4)',
-      [teamId, name, position, kit_number]
+      [teamId, name, position, kitNumber]
     );
 
     return res.status(200).end();

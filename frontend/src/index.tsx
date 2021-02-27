@@ -6,14 +6,29 @@ import LeagueTable from './components/LeagueTable';
 import NewVenueForm from './components/NewVenueForm';
 import NewTeamForm from './components/NewTeamForm';
 import NewPlayerForm from './components/NewPlayerForm';
+import LoginForm from './components/LoginForm';
+
+type User = {
+  username: string;
+  token: string;
+  id: number;
+};
 
 const App = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [leagueData, setLeagueData] = useState<[]>([]);
   const [allTeams, setAllTeams] = useState<any[]>([]);
   const [allVenues, setAllVenues] = useState<any[]>([]);
   const [allPlayers, setAllPlayers] = useState<any[]>([]);
-  
+
   useEffect(() => {
+    if (!user) {
+      const storageItem = localStorage.getItem('loggedFootballLeagueUser');
+      if (storageItem) {
+        setUser(JSON.parse(storageItem));
+      }
+    }
+
     axios
       .get('http://localhost:8000/api/fixtures/table')
       .then((res) => setLeagueData(res.data));
@@ -22,15 +37,28 @@ const App = () => {
       .get('http://localhost:8000/api/teams')
       .then((res) => setAllTeams(res.data));
 
-    axios.get('http://localhost:8000/api/venues')
-      .then((res) => setAllVenues(res.data))
-    
-      axios.get('http://localhost:8000/api/players')
-      .then((res) => setAllPlayers(res.data))
-  }, []);
+    axios
+      .get('http://localhost:8000/api/venues')
+      .then((res) => setAllVenues(res.data));
+
+    axios
+      .get('http://localhost:8000/api/players')
+      .then((res) => setAllPlayers(res.data));
+  }, [user]);
+
+  const handleLogOut = () => {
+    localStorage.removeItem('loggedFootballLeagueUser');
+    setUser(null);
+  }
 
   return (
     <div>
+      {user && 
+      <div>
+      Logged in as {user.username}
+      <button onClick={() => handleLogOut()}>Logout</button>
+      </div>
+      }
       <LeagueTable leagueData={leagueData} />
       Teams
       <ul>
@@ -53,6 +81,7 @@ const App = () => {
       <NewVenueForm />
       <NewTeamForm allVenues={allVenues} />
       <NewPlayerForm allTeams={allTeams} />
+      <LoginForm setUser={setUser} />
     </div>
   );
 };

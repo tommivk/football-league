@@ -12,6 +12,7 @@ const teamsRouter = require('./controllers/teams');
 const fixturesRouter = require('./controllers/fixtures');
 const goalsRouter = require('./controllers/goals');
 const usersRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
 
 const PORT = 8000;
 
@@ -22,6 +23,7 @@ app.use('/api/teams', teamsRouter);
 app.use('/api/fixtures', fixturesRouter);
 app.use('/api/goals', goalsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running at ${PORT}`)

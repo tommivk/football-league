@@ -21,6 +21,7 @@ const App = () => {
   const [allTeams, setAllTeams] = useState<any[]>([]);
   const [allVenues, setAllVenues] = useState<any[]>([]);
   const [allPlayers, setAllPlayers] = useState<any[]>([]);
+  const [upcomingMatches, setUpcomingMatches] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -45,21 +46,25 @@ const App = () => {
     axios
       .get('http://localhost:8000/api/players')
       .then((res) => setAllPlayers(res.data));
+
+    axios
+      .get('http://localhost:8000/api/fixtures/upcoming')
+      .then((res) => setUpcomingMatches(res.data));
   }, [user]);
 
   const handleLogOut = () => {
     localStorage.removeItem('loggedFootballLeagueUser');
     setUser(null);
-  }
+  };
 
   return (
     <div>
-      {user && 
-      <div>
-      Logged in as {user.username}
-      <button onClick={() => handleLogOut()}>Logout</button>
-      </div>
-      }
+      {user && (
+        <div>
+          Logged in as {user.username}
+          <button onClick={() => handleLogOut()}>Logout</button>
+        </div>
+      )}
       <LeagueTable leagueData={leagueData} />
       Teams
       <ul>
@@ -77,6 +82,17 @@ const App = () => {
       <ul>
         {allPlayers.map((player) => (
           <li key={player.id}>{player.name}</li>
+        ))}
+      </ul>
+      Upcoming
+      <ul>
+        {upcomingMatches.map((match) => (
+          <li key={match.id}>
+            <div>
+              {match.home_team} - {match.away_team} {match.venue_name}{' '}
+              {match.game_date}
+            </div>
+          </li>
         ))}
       </ul>
       <NewVenueForm />

@@ -25,17 +25,34 @@ fixturesRouter.get('/', async (_req: Request, res: Response) => {
   }
 });
 
-fixturesRouter.get('/table', async (_req: Request, res: Response) => {
-    try {
-      const { rows } = await pool.query(
-        'SELECT team_id as id, N as name, SUM(G) as goals FROM ((SELECT fixtures.home_team_id as team_id, (SELECT name FROM teams WHERE teams.id = fixtures.home_team_id) as N, fixtures.home_score as G FROM fixtures WHERE finished = true) UNION ALL (SELECT fixtures.away_team_id as team_id, (SELECT name FROM teams WHERE teams.id = fixtures.away_team_id) as N, fixtures.away_score as G FROM fixtures WHERE finished = true)) as t GROUP BY team_id, N ORDER BY goals DESC'
-      );
+fixturesRouter.get('/upcoming', async (_req: Request, res: Response) => {
+  try {
+    const dateNow = new Date().toUTCString();
 
-      return res.status(200).send(rows);
-    } catch (error) {
-      return res.status(500).send(error.message);
-    }
-  });
+    const {
+      rows,
+    } = await pool.query(
+      'SELECT fixtures.id, game_date, venues.name as venue_name, venues.country as venue_country, home.name as home_team, away.name as away_team FROM fixtures JOIN venues ON venue_id = venues.id JOIN teams as home ON home_team_id = home.id JOIN teams as away ON away_team_id = away.id WHERE game_date > $1 AND finished = false ORDER BY game_date',
+      [dateNow]
+    );
+
+    return res.status(200).json(rows);
+  } catch (error) {
+    return console.log(error);
+  }
+});
+
+fixturesRouter.get('/table', async (_req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT team_id as id, N as name, SUM(G) as goals FROM ((SELECT fixtures.home_team_id as team_id, (SELECT name FROM teams WHERE teams.id = fixtures.home_team_id) as N, fixtures.home_score as G FROM fixtures WHERE finished = true) UNION ALL (SELECT fixtures.away_team_id as team_id, (SELECT name FROM teams WHERE teams.id = fixtures.away_team_id) as N, fixtures.away_score as G FROM fixtures WHERE finished = true)) as t GROUP BY team_id, N ORDER BY goals DESC'
+    );
+
+    return res.status(200).send(rows);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
 
 fixturesRouter.get('/:id', async (req: Request, res: Response) => {
   try {

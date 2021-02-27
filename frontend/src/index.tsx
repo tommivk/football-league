@@ -7,6 +7,7 @@ import NewVenueForm from './components/NewVenueForm';
 import NewTeamForm from './components/NewTeamForm';
 import NewPlayerForm from './components/NewPlayerForm';
 import LoginForm from './components/LoginForm';
+import SignUpForm from './components/SignUpForm';
 
 type User = {
   username: string;
@@ -82,6 +83,7 @@ const App = () => {
       <NewTeamForm allVenues={allVenues} />
       <NewPlayerForm allTeams={allTeams} />
       <LoginForm setUser={setUser} />
+      <SignUpForm />
     </div>
   );
 };

@@ -24,6 +24,7 @@ const App = () => {
   const [allVenues, setAllVenues] = useState<any[]>([]);
   const [allPlayers, setAllPlayers] = useState<any[]>([]);
   const [upcomingMatches, setUpcomingMatches] = useState<any[]>([]);
+  const [finishedMatches, setFinishedMatches] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -52,6 +53,10 @@ const App = () => {
     axios
       .get('http://localhost:8000/api/fixtures/upcoming')
       .then((res) => setUpcomingMatches(res.data));
+
+      axios
+      .get('http://localhost:8000/api/fixtures/finished')
+      .then((res) => setFinishedMatches(res.data));
   }, [user]);
 
   const handleLogOut = () => {
@@ -73,13 +78,25 @@ const App = () => {
           </Route>
           <Route path="/fixtures">
             <Header />
-            <h2>upcoming</h2>
+            <h2>Upcoming</h2>
             <ul>
               {upcomingMatches.map((match) => (
                 <li key={match.id}>
                   <div>
                     {match.home_team} - {match.away_team} {match.venue_name}{' '}
                     {match.game_date}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <h2>Finished</h2>
+            <ul>
+              {finishedMatches.map((match) => (
+                <li key={match.id}>
+                  <div>
+                    {match.home_team} - {match.away_team}
+                    Result: {match.result}
                   </div>
                 </li>
               ))}
@@ -120,17 +137,6 @@ const App = () => {
             <ul>
               {allPlayers.map((player) => (
                 <li key={player.id}>{player.name}</li>
-              ))}
-            </ul>
-            Upcoming
-            <ul>
-              {upcomingMatches.map((match) => (
-                <li key={match.id}>
-                  <div>
-                    {match.home_team} - {match.away_team} {match.venue_name}{' '}
-                    {match.game_date}
-                  </div>
-                </li>
               ))}
             </ul>
           </Route>

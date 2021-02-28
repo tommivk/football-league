@@ -42,6 +42,17 @@ fixturesRouter.get('/upcoming', async (_req: Request, res: Response) => {
   }
 });
 
+fixturesRouter.get('/finished', async (_req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT fixtures.id, game_date, away_score, home_score, away_team.name as away_team, home_team.name as home_team, CASE WHEN home_score > away_score THEN '1' WHEN away_score > home_score THEN '2' WHEN away_score = home_score THEN 'X' END AS result FROM fixtures JOIN teams as home_team ON home_team.id = home_team_id JOIN teams as away_team ON away_team_id = away_team.id WHERE finished = true ORDER BY game_date"
+    );
+    return res.status(200).json(rows);
+  } catch (error) {
+    return res.send(error.message);
+  }
+});
+
 fixturesRouter.get('/table', async (_req: Request, res: Response) => {
   try {
     const { rows } = await pool.query(

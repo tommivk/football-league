@@ -13,6 +13,15 @@ usersRouter.get('/', async (_req: Request, res: Response) => {
   }
 });
 
+usersRouter.get('/:id/predictions', async (req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM predictions where user_id = $1', [req.params.id]);
+    return res.status(200).send(rows);
+  } catch (error) {
+    return console.log(error);
+  }
+});
+
 usersRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;

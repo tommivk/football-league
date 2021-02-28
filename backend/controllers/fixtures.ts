@@ -80,6 +80,16 @@ fixturesRouter.get('/table', async (_req: Request, res: Response) => {
   }
 });
 
+fixturesRouter.get('/predictions', async (_req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM predictions');
+    console.log(rows)
+    return res.status(200).json(rows);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
 fixturesRouter.get('/:id', async (req: Request, res: Response) => {
   try {
     const { rows } = await pool.query('SELECT * FROM fixtures WHERE id = $1', [
@@ -135,5 +145,29 @@ fixturesRouter.get('/:id/goals', async (req: Request, res: Response) => {
     console.log(error);
   }
 });
+
+fixturesRouter.post('/:id/predictions', async (req: Request, res: Response) => {
+  try {
+    const {userId, prediction} = req.body;
+    await pool.query('INSERT INTO predictions (user_id, fixture_id, prediction, date) VALUES ($1, $2, $3, $4)', [
+      userId, req.params.id, prediction, new Date(),
+    ])
+    return res.status(200).send();
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
+fixturesRouter.get('/:id/predictions', async (req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM predictions WHERE fixture_id = $1', [req.params.id]);
+    return res.status(200).json(rows);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
+
+
 
 module.exports = fixturesRouter;

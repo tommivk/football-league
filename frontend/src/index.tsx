@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -6,8 +7,9 @@ import LeagueTable from './components/LeagueTable';
 import NewVenueForm from './components/NewVenueForm';
 import NewTeamForm from './components/NewTeamForm';
 import NewPlayerForm from './components/NewPlayerForm';
-import LoginForm from './components/LoginForm';
 import SignUpForm from './components/SignUpForm';
+import Header from './components/Header';
+import LoginForm from './components/LoginForm';
 
 type User = {
   username: string;
@@ -59,47 +61,81 @@ const App = () => {
 
   return (
     <div>
-      {user && (
-        <div>
-          Logged in as {user.username}
-          <button onClick={() => handleLogOut()}>Logout</button>
-        </div>
-      )}
-      <LeagueTable leagueData={leagueData} />
-      Teams
-      <ul>
-        {allTeams.map((team) => (
-          <li key={team.id}>{team.name}</li>
-        ))}
-      </ul>
-      Venues
-      <ul>
-        {allVenues.map((venue) => (
-          <li key={venue.id}>{venue.name}</li>
-        ))}
-      </ul>
-      Players
-      <ul>
-        {allPlayers.map((player) => (
-          <li key={player.id}>{player.name}</li>
-        ))}
-      </ul>
-      Upcoming
-      <ul>
-        {upcomingMatches.map((match) => (
-          <li key={match.id}>
-            <div>
-              {match.home_team} - {match.away_team} {match.venue_name}{' '}
-              {match.game_date}
-            </div>
-          </li>
-        ))}
-      </ul>
-      <NewVenueForm />
-      <NewTeamForm allVenues={allVenues} />
-      <NewPlayerForm allTeams={allTeams} />
-      <LoginForm setUser={setUser} />
-      <SignUpForm />
+      <Router>
+        <Switch>
+          <Route path="/login">
+            <Header />
+            <LoginForm setUser={setUser} />
+          </Route>
+          <Route path="/table">
+            <Header />
+            <LeagueTable leagueData={leagueData} />
+          </Route>
+          <Route path="/fixtures">
+            <Header />
+            <h2>upcoming</h2>
+            <ul>
+              {upcomingMatches.map((match) => (
+                <li key={match.id}>
+                  <div>
+                    {match.home_team} - {match.away_team} {match.venue_name}{' '}
+                    {match.game_date}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Route>
+          <Route path="/admin">
+            <Header />
+            <NewVenueForm />
+            <NewTeamForm allVenues={allVenues} />
+            <NewPlayerForm allTeams={allTeams} />
+          </Route>
+          <Route path="/signup">
+            <Header />
+            <SignUpForm />
+          </Route>
+          <Route path="/">
+            <Header />
+            {user && (
+              <div>
+                Logged in as {user.username}
+                <button onClick={() => handleLogOut()}>Logout</button>
+              </div>
+            )}
+            <LeagueTable leagueData={leagueData} />
+            Teams
+            <ul>
+              {allTeams.map((team) => (
+                <li key={team.id}>{team.name}</li>
+              ))}
+            </ul>
+            Venues
+            <ul>
+              {allVenues.map((venue) => (
+                <li key={venue.id}>{venue.name}</li>
+              ))}
+            </ul>
+            Players
+            <ul>
+              {allPlayers.map((player) => (
+                <li key={player.id}>{player.name}</li>
+              ))}
+            </ul>
+            Upcoming
+            <ul>
+              {upcomingMatches.map((match) => (
+                <li key={match.id}>
+                  <div>
+                    {match.home_team} - {match.away_team} {match.venue_name}{' '}
+                    {match.game_date}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 };

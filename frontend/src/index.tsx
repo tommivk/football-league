@@ -25,6 +25,7 @@ const App = () => {
   const [allPlayers, setAllPlayers] = useState<any[]>([]);
   const [upcomingMatches, setUpcomingMatches] = useState<any[]>([]);
   const [finishedMatches, setFinishedMatches] = useState<any[]>([]);
+  const [ongoingMatches, setOngoingMatches] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -54,9 +55,13 @@ const App = () => {
       .get('http://localhost:8000/api/fixtures/upcoming')
       .then((res) => setUpcomingMatches(res.data));
 
-      axios
+    axios
       .get('http://localhost:8000/api/fixtures/finished')
       .then((res) => setFinishedMatches(res.data));
+
+    axios
+      .get('http://localhost:8000/api/fixtures/ongoing')
+      .then((res) => setOngoingMatches(res.data));
   }, [user]);
 
   const handleLogOut = () => {
@@ -84,6 +89,18 @@ const App = () => {
                 <li key={match.id}>
                   <div>
                     {match.home_team} - {match.away_team} {match.venue_name}{' '}
+                    {match.game_date}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <h2>Ongoing</h2>
+            <ul>
+              {ongoingMatches.map((match) => (
+                <li key={match.id}>
+                  <div>
+                    {match.home_team} - {match.away_team}{' '}
                     {match.game_date}
                   </div>
                 </li>

@@ -53,6 +53,21 @@ fixturesRouter.get('/finished', async (_req: Request, res: Response) => {
   }
 });
 
+fixturesRouter.get('/ongoing', async (_req: Request, res: Response) => {
+  try {
+    const dateNow = new Date().toISOString();
+    const {
+      rows,
+    } = await pool.query(
+      'SELECT fixtures.id, game_date, home_score, away_score, home_team.name as home_team, away_team.name as away_team FROM fixtures JOIN teams as away_team ON away_team.id = away_team_id JOIN teams as home_team ON home_team.id = home_team_id WHERE finished=false AND game_date <= $1',
+      [dateNow]
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    res.send(error.message);
+  }
+});
+
 fixturesRouter.get('/table', async (_req: Request, res: Response) => {
   try {
     const { rows } = await pool.query(

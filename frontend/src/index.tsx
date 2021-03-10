@@ -10,6 +10,7 @@ import NewPlayerForm from './components/NewPlayerForm';
 import SignUpForm from './components/SignUpForm';
 import Header from './components/Header';
 import LoginForm from './components/LoginForm';
+import Rounds from './components/Rounds';
 
 type User = {
   username: string;
@@ -26,6 +27,7 @@ const App = () => {
   const [upcomingMatches, setUpcomingMatches] = useState<any[]>([]);
   const [finishedMatches, setFinishedMatches] = useState<any[]>([]);
   const [ongoingMatches, setOngoingMatches] = useState<any[]>([]);
+  const [usersPredictions, setUsersPredictions] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -62,12 +64,36 @@ const App = () => {
     axios
       .get('http://localhost:8000/api/fixtures/ongoing')
       .then((res) => setOngoingMatches(res.data));
+
+    if (user) {
+      axios
+        .get(`http://localhost:8000/api/users/${user.id}/predictions`)
+        .then((res) => setUsersPredictions(res.data));
+    }
   }, [user]);
 
   const handleLogOut = () => {
     localStorage.removeItem('loggedFootballLeagueUser');
     setUser(null);
   };
+
+  const handleNewPrediction = async (fixtureId:number, prediction:string) => {
+    if(!user) return
+    const newPrediction = {
+      userId: user.id,
+      prediction,
+    }
+    try {
+      const response = await axios.post(`http://localhost:8000/api/fixtures/${fixtureId}/predictions`, newPrediction)
+      setUsersPredictions(usersPredictions.concat(response.data))
+    } catch (error) {
+      console.log('error');
+    }
+  };
+
+  const getPrediction = (matchId:number) => {
+    return usersPredictions.find((p) => p.fixture_id === matchId);
+  }
 
   return (
     <div>
@@ -76,6 +102,10 @@ const App = () => {
           <Route path="/login">
             <Header />
             <LoginForm setUser={setUser} />
+          </Route>
+          <Route path="/rounds">
+            <Header />
+            <Rounds />
           </Route>
           <Route path="/table">
             <Header />
@@ -90,6 +120,17 @@ const App = () => {
                   <div>
                     {match.home_team} - {match.away_team} {match.venue_name}{' '}
                     {match.game_date}
+                    {!getPrediction(match.id) ?
+                    <div>
+                      <button onClick={()=> handleNewPrediction(match.id, '1')}>1</button>
+                      <button onClick={()=> handleNewPrediction(match.id, 'X')}>X</button>
+                      <button onClick={()=> handleNewPrediction(match.id, '2')}>2</button>
+                    </div>
+                    : <div>
+                      my prediction {' '}
+                      {getPrediction(match.id).prediction}
+                      </div>
+                    }   
                   </div>
                 </li>
               ))}
@@ -100,8 +141,7 @@ const App = () => {
               {ongoingMatches.map((match) => (
                 <li key={match.id}>
                   <div>
-                    {match.home_team} - {match.away_team}{' '}
-                    {match.game_date}
+                    {match.home_team} - {match.away_team} {match.game_date}
                   </div>
                 </li>
               ))}

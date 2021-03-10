@@ -13,6 +13,7 @@ const fixturesRouter = require('./controllers/fixtures');
 const goalsRouter = require('./controllers/goals');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
+const roundsRouter = require('./controllers/rounds');
 
 const PORT = 8000;
 
@@ -24,6 +25,7 @@ app.use('/api/fixtures', fixturesRouter);
 app.use('/api/goals', goalsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/rounds', roundsRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running at ${PORT}`)

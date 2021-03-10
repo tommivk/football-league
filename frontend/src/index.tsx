@@ -72,11 +72,6 @@ const App = () => {
     }
   }, [user]);
 
-  const handleLogOut = () => {
-    localStorage.removeItem('loggedFootballLeagueUser');
-    setUser(null);
-  };
-
   const handleNewPrediction = async (fixtureId:number, prediction:string) => {
     if(!user) return
     const newPrediction = {
@@ -100,19 +95,19 @@ const App = () => {
       <Router>
         <Switch>
           <Route path="/login">
-            <Header />
+            <Header user={user} setUser={setUser} />
             <LoginForm setUser={setUser} />
           </Route>
           <Route path="/rounds">
-            <Header />
+            <Header user={user} setUser={setUser} />
             <Rounds />
           </Route>
           <Route path="/table">
-            <Header />
+            <Header user={user} setUser={setUser} />
             <LeagueTable leagueData={leagueData} />
           </Route>
           <Route path="/fixtures">
-            <Header />
+            <Header user={user} setUser={setUser} />
             <h2>Upcoming</h2>
             <ul>
               {upcomingMatches.map((match) => (
@@ -160,21 +155,20 @@ const App = () => {
             </ul>
           </Route>
           <Route path="/admin">
-            <Header />
+            <Header user={user} setUser={setUser} />
             <NewVenueForm />
             <NewTeamForm allVenues={allVenues} />
             <NewPlayerForm allTeams={allTeams} />
           </Route>
           <Route path="/signup">
-            <Header />
+            <Header user={user} setUser={setUser} />
             <SignUpForm />
           </Route>
           <Route path="/">
-            <Header />
+            <Header user={user} setUser={setUser} />
             {user && (
               <div>
                 Logged in as {user.username}
-                <button onClick={() => handleLogOut()}>Logout</button>
               </div>
             )}
             <LeagueTable leagueData={leagueData} />

@@ -29,4 +29,6 @@ body {
 
 .header li{
   margin: 20px;
+  color: white;
+  cursor: pointer;
  }
